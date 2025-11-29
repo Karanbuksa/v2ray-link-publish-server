@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
+import https from 'https';
 import { PanelConfig, XUILoginResponse, XUIInboundResponse, XUIInbound } from '../types';
 
 export class XUIClient {
@@ -12,11 +13,18 @@ export class XUIClient {
         this.config = config;
 
         const jar = new CookieJar();
+
+        // Создаем HTTPS агент который игнорирует самоподписанные сертификаты
+        const httpsAgent = new https.Agent({
+            rejectUnauthorized: false
+        });
+
         this.axiosInstance = wrapper(axios.create({
             baseURL: config.url,
             jar,
             withCredentials: true,
             timeout: 10000,
+            httpsAgent, // Добавляем агент для игнорирования SSL ошибок
         }));
     }
 
