@@ -1,0 +1,11 @@
+node_modules
+dist
+data
+.env
+.git
+.gitignore
+README.md
+QUICKSTART.md
+scripts
+*.log
+*.md

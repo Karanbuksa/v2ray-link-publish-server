@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  v2ray-publish-server:
+    build: .
+    container_name: v2ray-publish-server
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=${NODE_ENV:-production}
+      - PANEL_URL=${PANEL_URL}
+      - PANEL_USERNAME=${PANEL_USERNAME}
+      - PANEL_PASSWORD=${PANEL_PASSWORD}
+      - SERVER_HOSTNAME=${SERVER_HOSTNAME}
+      - DATABASE_PATH=/app/data/database.db
+      - JWT_SECRET=${JWT_SECRET}
+      - API_KEY=${API_KEY}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    networks:
+      - v2ray-network
+
+networks:
+  v2ray-network:
+    driver: bridge
