@@ -92,6 +92,10 @@ export class LinkGenerator {
             if (reality.settings?.spiderX) {
                 params.append('spx', encodeURIComponent(reality.settings.spiderX));
             }
+            // MLDSA65 verify для QUIC padding
+            if (reality.settings?.mldsa65Verify) {
+                params.append('pqv', reality.settings.mldsa65Verify);
+            }
         }
 
         // TLS settings
@@ -121,6 +125,32 @@ export class LinkGenerator {
         } else if (network === 'grpc' && streamSettings.grpcSettings) {
             if (streamSettings.grpcSettings.serviceName) {
                 params.append('serviceName', streamSettings.grpcSettings.serviceName);
+            }
+        } else if (network === 'xhttp' && streamSettings.xhttpSettings) {
+            // XHTTP/SplitHTTP settings
+            if (streamSettings.xhttpSettings.path) {
+                params.append('path', streamSettings.xhttpSettings.path);
+            }
+            if (streamSettings.xhttpSettings.host) {
+                params.append('host', streamSettings.xhttpSettings.host);
+            }
+            if (streamSettings.xhttpSettings.mode) {
+                params.append('mode', streamSettings.xhttpSettings.mode);
+            }
+            // QUIC padding value - очень длинный параметр
+            if (streamSettings.xhttpSettings.extra?.pqv) {
+                params.append('pqv', streamSettings.xhttpSettings.extra.pqv);
+            }
+        } else if (network === 'splithttp' && streamSettings.splithttpSettings) {
+            // SplitHTTP settings (alias для xhttp)
+            if (streamSettings.splithttpSettings.path) {
+                params.append('path', streamSettings.splithttpSettings.path);
+            }
+            if (streamSettings.splithttpSettings.host) {
+                params.append('host', streamSettings.splithttpSettings.host);
+            }
+            if (streamSettings.splithttpSettings.mode) {
+                params.append('mode', streamSettings.splithttpSettings.mode);
             }
         }
 
