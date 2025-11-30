@@ -64,6 +64,30 @@ export function createAdminRouter(
         }
     });
 
+    // Обновить пользователя
+    router.put('/users/:id', (req: Request, res: Response) => {
+        try {
+            const id = parseInt(req.params.id);
+            const { username, email } = req.body;
+
+            if (!username || !email) {
+                return res.status(400).json({ error: 'Username and email are required' });
+            }
+
+            const user = userService.updateUser(id, username, email);
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            res.json({ user });
+        } catch (error: any) {
+            if (error.code === 'SQLITE_CONSTRAINT') {
+                return res.status(400).json({ error: 'Username or email already exists' });
+            }
+            res.status(500).json({ error: 'Failed to update user' });
+        }
+    });
+
     // Удалить пользователя
     router.delete('/users/:id', (req: Request, res: Response) => {
         try {

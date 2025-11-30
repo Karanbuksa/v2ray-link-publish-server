@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
 import { getDatabase } from './database/db';
 import { XUIClient } from './services/xuiClient';
 import { createAdminRouter } from './routes/admin';
@@ -13,6 +14,9 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Инициализация БД
 const db = getDatabase();
@@ -47,10 +51,12 @@ app.get('/', (req, res) => {
     res.json({
         name: 'V2Ray Link Publish Server',
         version: '1.0.0',
+        adminPanel: '/admin.html',
         endpoints: {
             admin: {
                 users: 'GET /api/admin/users',
                 createUser: 'POST /api/admin/users',
+                updateUser: 'PUT /api/admin/users/:id',
                 getUser: 'GET /api/admin/users/:id',
                 deleteUser: 'DELETE /api/admin/users/:id',
                 addInbound: 'POST /api/admin/users/:id/inbounds',

@@ -45,6 +45,17 @@ export class UserService {
         return stmt.all() as User[];
     }
 
+    updateUser(id: number, username: string, email: string): User | null {
+        const stmt = this.db.getDb().prepare(`
+            UPDATE users
+            SET username = ?, email = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `);
+
+        stmt.run(username, email, id);
+        return this.getUserById(id);
+    }
+
     addInboundMapping(userId: number, inboundId: number, clientEmail: string): UserInboundMapping {
         const stmt = this.db.getDb().prepare(`
             INSERT OR IGNORE INTO user_inbound_mappings (user_id, inbound_id, client_email)
