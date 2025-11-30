@@ -70,8 +70,31 @@ export class LinkGenerator {
         const params = new URLSearchParams();
 
         params.append('type', streamSettings.network || 'tcp');
+        params.append('encryption', 'none');
         params.append('security', streamSettings.security || 'none');
 
+        // Reality settings
+        if (streamSettings.security === 'reality' && streamSettings.realitySettings) {
+            const reality = streamSettings.realitySettings;
+
+            if (reality.settings?.publicKey) {
+                params.append('pbk', reality.settings.publicKey);
+            }
+            if (reality.settings?.fingerprint) {
+                params.append('fp', reality.settings.fingerprint);
+            }
+            if (reality.serverNames && reality.serverNames.length > 0) {
+                params.append('sni', reality.serverNames[0]);
+            }
+            if (reality.shortIds && reality.shortIds.length > 0) {
+                params.append('sid', reality.shortIds[0]);
+            }
+            if (reality.settings?.spiderX) {
+                params.append('spx', encodeURIComponent(reality.settings.spiderX));
+            }
+        }
+
+        // TLS settings
         if (streamSettings.security === 'tls') {
             if (streamSettings.tlsSettings?.serverName) {
                 params.append('sni', streamSettings.tlsSettings.serverName);
@@ -81,6 +104,12 @@ export class LinkGenerator {
             }
         }
 
+        // Flow control
+        if (client.flow) {
+            params.append('flow', client.flow);
+        }
+
+        // Network settings
         const network = streamSettings.network;
         if (network === 'ws' && streamSettings.wsSettings) {
             if (streamSettings.wsSettings.path) {
@@ -95,7 +124,7 @@ export class LinkGenerator {
             }
         }
 
-        const remark = encodeURIComponent(inbound.remark || clientEmail);
+        const remark = encodeURIComponent(`${inbound.remark}-${clientEmail}`);
         return `vless://${client.id}@${address}:${inbound.port}?${params.toString()}#${remark}`;
     }
 
