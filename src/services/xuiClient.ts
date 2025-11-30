@@ -95,7 +95,7 @@ export class XUIClient {
         await this.ensureAuthenticated();
 
         try {
-            const response = await this.axiosInstance.get<XUIInboundResponse>(
+            const response = await this.axiosInstance.get<any>(
                 `/panel/api/inbounds/get/${id}`
             );
 
@@ -103,7 +103,8 @@ export class XUIClient {
                 return null;
             }
 
-            return response.data.obj?.[0] || null;
+            // API возвращает obj как объект, а не массив
+            return response.data.obj || null;
         } catch (error) {
             console.error(`Error fetching inbound ${id}:`, error);
             return null;
